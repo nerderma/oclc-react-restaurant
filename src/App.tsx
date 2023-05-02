@@ -1,9 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "./shared/Card";
-import { foods } from "./types/food";
+import { Food } from "./types/food";
+import { getFoods } from "./services/foods.service";
 
 export function App() {
   const [search, setSearch] = useState("");
+  const [foods, setFoods] = useState<Food[]>([]);
+
+  useEffect(() => {
+    async function fetchFoods() {
+      const foods = await getFoods();
+      setFoods(foods);
+    }
+    fetchFoods();
+  }, []);
 
   const matchingFoods = foods.filter((f) =>
     f.name.toLowerCase().includes(search)
@@ -12,7 +22,8 @@ export function App() {
   //foods.filter((food) => food.tags.includes("Appetizer"));
 
   return (
-    <>
+    <main>
+      <header></header>
       <h1>Menu</h1>
       <form>
         <label htmlFor="search">Search</label>{" "}
@@ -27,7 +38,7 @@ export function App() {
       <h2>Appetizers</h2>
       <section className="flex flex-wrap">
         {matchingFoods.map((food) => (
-          <Card key={food.id}>
+          <Card className="m-4" key={food.id}>
             <div className="flex">
               <div>
                 <h3 className="text-lg font-bold">{food.name}</h3>
@@ -43,6 +54,6 @@ export function App() {
           </Card>
         ))}
       </section>
-    </>
+    </main>
   );
 }
