@@ -2,7 +2,16 @@ import { useEffect, useState } from "react";
 import { Card } from "./shared/Card";
 import { Food } from "./types/food";
 import { getFoods } from "./services/foods.service";
-import CircularProgress from "@mui/material/CircularProgress";
+import {
+  AppBar,
+  Box,
+  CircularProgress,
+  IconButton,
+  Link,
+  Toolbar,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Anchor } from "./shared/Anchor";
 
 export function App() {
   const [search, setSearch] = useState("");
@@ -44,7 +53,16 @@ export function App() {
 
   return (
     <main>
-      <header></header>
+      <header>
+        <ul>
+          <li>
+            <Anchor href="/">Menu</Anchor>
+          </li>
+          <li>
+            <Anchor href="/admin">Admin</Anchor>
+          </li>
+        </ul>
+      </header>
       <h1>Menu</h1>
       <form>
         <label htmlFor="search">Search</label>{" "}
