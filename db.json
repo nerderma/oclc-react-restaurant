@@ -167,6 +167,22 @@
       "description": "Fresh grilled veggies on our homemade toasted sourdough.",
       "price": 8.99,
       "tags": ["Lunch", "Dinner", "Vegetarian"]
+    },
+    {
+      "name": "Burger 2",
+      "image": "burger.jpg",
+      "price": "2.22",
+      "description": "The second burger",
+      "tags": [],
+      "id": 22
+    },
+    {
+      "name": "Burger 3",
+      "image": "burger.jpg",
+      "price": "3.33",
+      "description": "The third burger",
+      "tags": [],
+      "id": 23
     }
   ]
 }
