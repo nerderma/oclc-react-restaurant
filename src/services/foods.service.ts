@@ -1,4 +1,5 @@
-import { NewFood } from "../Admin";
+import { DeleteFood, NewFood, RemoveFood } from "../Admin";
+import { Food } from "../types/food";
 
 export async function getFoods() {
   const resp = await fetch("http://localhost:3001/foods");
@@ -20,4 +21,14 @@ export async function addFood(food: NewFood) {
     throw new Error(resp.statusText);
   }
   return resp.json();
+}
+
+export async function deleteFood(id: number) {
+  const resp = await fetch("http://localhost:3001/foods/" + id, {
+    method: "DELETE",
+  });
+  if (!resp.ok) {
+    throw new Error(resp.statusText);
+  }
+  return;
 }

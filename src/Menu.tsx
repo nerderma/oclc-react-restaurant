@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Card } from "./shared/Card";
 import { Food } from "./types/food";
-import { getFoods } from "./services/foods.service";
-import { CircularProgress } from "@mui/material";
+import { deleteFood, getFoods } from "./services/foods.service";
+import { Button, CircularProgress } from "@mui/material";
+import { enqueueSnackbar } from "notistack";
 
 export function Menu() {
   const [search, setSearch] = useState("");
   const [foods, setFoods] = useState<Food[]>([]);
   const [isFetching, setIsFetching] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     async function fetchFoods() {
@@ -24,21 +26,43 @@ export function Menu() {
 
   //foods.filter((food) => food.tags.includes("Appetizer"));
   function renderSection() {
-    return matchingFoods.map((food) => (
-      <Card className="m-4" key={food.id}>
-        <div className="flex">
-          <div>
-            <h3 className="text-lg font-bold">{food.name}</h3>
-            <p>{food.description}</p>
-            <p className="mb-4 mt-4">
-              <span className="font-bold">Tags:</span> {food.tags.join(", ")}
-            </p>
-            <p className="font-bold">${food.price}</p>
-          </div>
-          <img src={food.image} alt={food.name} className="h-32 ml-4" />
-        </div>
-      </Card>
-    ));
+    return (
+      <section className="flex flex-wrap">
+        {isDeleting && (
+          <>
+            Deleting...
+            <CircularProgress />
+          </>
+        )}
+        {matchingFoods.map((food) => (
+          <Card className="m-4" key={food.id}>
+            <div className="flex">
+              <div>
+                <Button
+                  onClick={async () => {
+                    // Optimistic delete
+                    setFoods([...foods.filter((f) => f.id !== food.id)]);
+                    await deleteFood(food.id);
+                    setIsDeleting(false);
+                    enqueueSnackbar("Food deleted.", { variant: "success" });
+                  }}
+                >
+                  Delete
+                </Button>
+                <h3 className="text-lg font-bold">{food.name}</h3>
+                <p>{food.description}</p>
+                <p className="mb-4 mt-4">
+                  <span className="font-bold">Tags:</span>{" "}
+                  {food.tags.join(", ")}
+                </p>
+                <p className="font-bold">${food.price}</p>
+              </div>
+              <img src={food.image} alt={food.name} className="h-32 ml-4" />
+            </div>
+          </Card>
+        ))}
+      </section>
+    );
   }
 
   return (
@@ -56,9 +80,7 @@ export function Menu() {
       </form>
       <h2>Appetizers</h2>
 
-      <section className="flex flex-wrap">
-        {isFetching ? <CircularProgress /> : renderSection()}
-      </section>
+      {isFetching ? <CircularProgress /> : renderSection()}
     </>
   );
 }
