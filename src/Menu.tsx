@@ -4,22 +4,35 @@ import { Food } from "./types/food";
 import { deleteFood, getFoods } from "./services/foods.service";
 import { Button, CircularProgress } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
+import { useUserContext } from "./context/UserContext";
 
 export function Menu() {
   const [search, setSearch] = useState("");
   const [foods, setFoods] = useState<Food[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState("");
+
+  const { user } = useUserContext();
 
   useEffect(() => {
     async function fetchFoods() {
-      const foods = await getFoods();
-      setFoods(foods);
-      setIsFetching(false);
+      try {
+        const foods = await getFoods();
+        setFoods(foods);
+      } catch (err) {
+        setError("Error fetching foods.");
+        enqueueSnackbar("Error fetching foods. Try reloading page.", {
+          variant: "error",
+        });
+      } finally {
+        setIsFetching(false);
+      }
     }
     fetchFoods();
   }, []);
 
+  // Derived state - Calculated from existing state on each render
   const matchingFoods = foods.filter((f) =>
     f.name.toLowerCase().includes(search)
   );
@@ -39,6 +52,7 @@ export function Menu() {
             <div className="flex">
               <div>
                 <Button
+                  aria-label={"Delete " + food.name}
                   onClick={async () => {
                     // Optimistic delete
                     setFoods([...foods.filter((f) => f.id !== food.id)]);
@@ -65,9 +79,13 @@ export function Menu() {
     );
   }
 
+  // By throwing error here, the Error Boundary will catch it and display fallback UI
+  if (error) throw new Error(error);
+
   return (
     <>
       <h1>Menu</h1>
+      {user && <p>Welcome, {user.name}</p>}
       <form>
         <label htmlFor="search">Search</label>{" "}
         <input
@@ -79,6 +97,8 @@ export function Menu() {
         />
       </form>
       <h2>Appetizers</h2>
+
+      {search.length > 0 && <h3>{matchingFoods.length + " foods found."}</h3>}
 
       {isFetching ? <CircularProgress /> : renderSection()}
     </>

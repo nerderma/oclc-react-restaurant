@@ -225,14 +225,6 @@
         "Dinner",
         "Vegetarian"
       ]
-    },
-    {
-      "name": "Burger 2",
-      "image": "burger.jpg",
-      "price": "2.22",
-      "description": "The second burger",
-      "tags": [],
-      "id": 22
     }
   ]
 }
